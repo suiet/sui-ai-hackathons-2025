@@ -93,35 +93,34 @@ func ValidateNFTImage(title, description, imageUrl string) (isSafe bool, invalid
 }
 
 func fetchImageAsBase64(url string) (string, error) {
-	// 发起 HTTP GET 请求
+	// Send HTTP GET request
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch image: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// 检查 HTTP 状态码
+	// Check HTTP status code
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("failed to fetch image: HTTP %d", resp.StatusCode)
 	}
 
-	// 获取 Content-Type
+	// Get Content-Type
 	contentType := resp.Header.Get("Content-Type")
 	if contentType == "" {
-		//return "", fmt.Errorf("content-type not found")
 		contentType = "image/jpeg"
 	}
 
-	// 读取图片内容
+	// Read image content
 	imageData, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to read image content: %v", err)
 	}
 
-	// 将图片内容编码为 Base64
+	// Encode image content to Base64
 	base64Data := base64.StdEncoding.EncodeToString(imageData)
 
-	// 生成 HTML 可用的 src 格式
+	// Generate HTML-compatible src format
 	base64Src := fmt.Sprintf("data:%s;base64,%s", contentType, base64Data)
 	return base64Src, nil
 }
